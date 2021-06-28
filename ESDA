@@ -1,0 +1,109 @@
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct ficha{
+    char nome[50];
+    int idade;
+    long int matricula;
+};
+struct ficha lista;
+
+
+
+void criar(FILE *arquivo);//Função para criar o arquivo
+void addElementos(FILE *arquivo);//Função para inserir dados
+void exibir(FILE *arquivo);//Função para exibir dados
+void pesquisar(FILE *arquivo);//Função para pesquisar dados
+
+int main(){
+    int op;
+    FILE *arquivo;
+    criar(arquivo);
+    do{
+       printf("1 - Para Cadastrar Aluno \n");
+       printf("2 - Lista Alunos \n"); 
+       printf("3 - Para Pesquisar Aluno \n");
+       printf("4 - Ordenar Lista de Alunos pelo Nome \n");
+       printf("5 - Remover alunos\n");
+       printf("6 - Sair\n");
+       printf("Digite sua opcao: ");
+       scanf("%d",&op);
+       switch(op){
+              case 1:
+                   addElementos(arquivo); 
+                   break;
+              case 2:
+                   exibir(arquivo);
+                   break;
+              case 3:
+                   pesquisar(arquivo);
+                   break;          
+              default:
+                   printf("Saindo!\n");
+       }                              
+    }while(op != 6);
+    system("pause");
+}
+//Função para pesquisar dados
+void pesquisar(FILE *arquivo){
+     char Npesquisa[50];
+     fflush(stdin);
+     if((arquivo = fopen("Logger.txt","rb")) == NULL){
+         exit(0);
+     }
+     printf("\n----------------------------------------------------------\n\n");
+     printf("Digite do Aluno que deseja pesquisar: ");
+     gets(Npesquisa); 
+     printf("\n");      
+     fread(&lista,sizeof(struct ficha),1,arquivo);
+     if(strcmp(Npesquisa,lista.nome) == 0){
+        printf("Nome: %s , Idade: %d , Matricula: %d\n",lista.nome,lista.idade,lista.matricula);
+     }else{
+        printf("Nome nao encontrado\n");
+     }     
+     printf("\n----------------------------------------------------------\n\n");
+}        
+//Função para exibir dados
+void exibir(FILE *arquivo){
+     if((arquivo = fopen("Logger.txt","rb")) == NULL){
+         exit(0);
+     }
+     printf("\n----------------------------------------------------------\n\n");
+     while(!feof(arquivo)){//Enquanto não chaga ao fim do arquivo, lê o aquivo        
+        fread(&lista,sizeof(struct ficha),1,arquivo);
+        printf("Nome: %s , Idade: %d , Matricula: %d\n",lista.nome,lista.idade,lista.matricula);
+     }
+     printf("\n----------------------------------------------------------\n\n");
+}     
+//Função para inserir dados
+void addElementos(FILE *arquivo){
+    int tam;
+    printf("Digite a Quantidade de Aluno que Deseja Cadastrar: ");
+    scanf("%d",&tam);
+    (struct ficha*) malloc(tam*sizeof(struct ficha));//Loca memória para a estrutura 
+    if((arquivo = fopen("Logger.txt","wb")) == NULL){
+         exit(0);
+     }
+     printf("\n----------------------------------------------------------\n\n");
+     for(int i=0; i<tam; i++){
+        fflush(stdin);   
+        printf("Digite o Nome do Aluno: ");
+        gets(lista.nome);
+        printf("Digite a Idade do Aluno: ");
+        scanf("%d",&lista.idade);
+        printf("Digite a Matricula do Aluno: ");
+        scanf("%d",&lista.matricula);
+        fwrite(&lista,sizeof(struct ficha),1,arquivo);   
+     }
+     fclose(arquivo);
+}
+//Função para criar o arquivo
+void criar(FILE *arquivo){
+     if((arquivo = fopen("Logger.txt","wb")) == NULL){
+         exit(0);
+     }
+     fclose(arquivo);
+}   
